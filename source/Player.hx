@@ -5,7 +5,6 @@ import flixel.FlxSprite;
 import flixel.FlxObject;
 import flixel.util.FlxPoint;
 import flixel.util.FlxColor;
-import flixel.input.touch.FlxTouch;
 
 class Player extends FlxSprite
 {
@@ -72,7 +71,7 @@ class Player extends FlxSprite
 
   private function shouldBeDead():Bool
   {
-    return outOfBounds() || isTouching(FlxObject.RIGHT);
+    return outOfBounds();
   }
 
   private function movement():Void

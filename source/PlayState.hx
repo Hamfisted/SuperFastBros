@@ -2,14 +2,8 @@ package;
 
 import flixel.FlxG;
 import flixel.FlxCamera;
-import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.FlxObject;
-import flixel.text.FlxText;
-import flixel.ui.FlxButton;
-import flixel.util.FlxMath;
-import flixel.group.FlxGroup;
-import flixel.group.FlxTypedGroup;
 import flixel.tile.FlxTilemap;
 import flixel.addons.editors.ogmo.FlxOgmoLoader;
 
@@ -65,7 +59,11 @@ class PlayState extends FlxState
   override public function update():Void
   {
     super.update();
-    FlxG.collide(_player, _mWalls);
+    /*
+      "Always collide the map with objects, not the other way around."
+      http://api.haxeflixel.com/flixel/addons/editors/ogmo/FlxOgmoLoader.html
+    */
+    FlxG.collide(_mWalls, _player);
   }
 
   private function placeEntities(entityName:String, entityData:Xml):Void
@@ -74,8 +72,8 @@ class PlayState extends FlxState
     var y:Int = Std.parseInt(entityData.get("y"));
     if (entityName == "player")
     {
-        _player.x = x;
-        _player.y = y;
+      _player.x = x;
+      _player.y = y;
     }
   }
 
