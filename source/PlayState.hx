@@ -19,6 +19,7 @@ class PlayState extends FlxState
   private var _player:Player;
   private var _map:FlxOgmoLoader;
   private var _mWalls:FlxTilemap;
+  private var _levelEnd:LevelEnd;
   private var _grpSpikes:FlxTypedGroup<Spike>;
 
   /**
@@ -29,8 +30,10 @@ class PlayState extends FlxState
     FlxG.mouse.visible = false;
 
     FlxG.console.addCommand(["map", "level", "changelevel"], loadLevel, "loadLevel", 1);
+    FlxG.console.addCommand(["winlevel"], winLevel, "winLevel");
 
     _grpSpikes = new FlxTypedGroup<Spike>();
+    _levelEnd = new LevelEnd();
     _player = new Player();
 
     loadLevel(Reg.level);
@@ -62,10 +65,17 @@ class PlayState extends FlxState
     */
     FlxG.collide(_mWalls, _player);
     FlxG.collide(_player, _grpSpikes, _player.touchSpike);
+    FlxG.collide(_player, _levelEnd, winLevel);
 
     if (!_player.alive) {
       loadLevel(Reg.level);
     }
+  }
+
+  public function winLevel(?P:Player, ?W:LevelEnd):Void
+  {
+    Reg.level++;
+    loadLevel(Reg.level);
   }
 
   public function loadLevel(i:Int):Void
@@ -81,6 +91,7 @@ class PlayState extends FlxState
       FlxG.log.add('Loading level: ${levelPath}');
     }
 
+    Reg.level = i;
     cleanupStage();
 
     _map = new FlxOgmoLoader(levelPath);
@@ -92,6 +103,7 @@ class PlayState extends FlxState
     _map.loadEntities(placeEntities, "entities");
 
     add(_grpSpikes);
+    add(_levelEnd);
     add(_player);
 
     FlxG.camera.follow(_player, FlxCamera.STYLE_PLATFORMER);
@@ -103,6 +115,7 @@ class PlayState extends FlxState
     remove(_mWalls);
     remove(_grpSpikes);
     remove(_player);
+    remove(_levelEnd);
     // Destroy objects as necessary
     FlxDestroyUtil.destroy(_mWalls);
     _grpSpikes.callAll("destroy");
@@ -120,6 +133,10 @@ class PlayState extends FlxState
     else if (entityName == "spike")
     {
       _grpSpikes.add(new Spike(x, y));
+    }
+    else if (entityName == "level_end")
+    {
+      _levelEnd.reset(x, y);
     }
   }
 
