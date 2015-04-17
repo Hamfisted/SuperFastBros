@@ -50,10 +50,6 @@ class Player extends FlxSprite
         Reg.score += 1;
       }
     }
-    if (outOfBounds())
-    {
-      this.reset(initX, initY);
-    }
     super.update();
   }
 
@@ -108,9 +104,16 @@ class Player extends FlxSprite
     var shakeY = Math.abs(lastVelocity.y - velocity.y)/30000;
     var shakeAmount = shakeY + Math.abs(lastVelocity.x - velocity.x)/30000;
 
-    if (shakeAmount > 0.01 && justTouched(FlxObject.ANY))
-    {
-      FlxG.camera.shake(shakeAmount, 0.1);
-    }
+    /* Let's disable shake for now. It's annoying! */
+
+    // if (shakeAmount > 0.01 && justTouched(FlxObject.FLOOR))
+    // {
+    //   FlxG.camera.shake(shakeAmount, 0.1);
+    // }
+  }
+
+  public function touchSpike(P:Player, S:Spike):Void
+  {
+    kill();
   }
 }

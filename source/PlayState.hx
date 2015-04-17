@@ -4,6 +4,8 @@ import flixel.FlxG;
 import flixel.FlxCamera;
 import flixel.FlxState;
 import flixel.FlxObject;
+import flixel.util.FlxDestroyUtil;
+import flixel.group.FlxTypedGroup;
 import flixel.tile.FlxTilemap;
 import flixel.addons.editors.ogmo.FlxOgmoLoader;
 import flixel.system.debug.LogStyle;
@@ -17,6 +19,7 @@ class PlayState extends FlxState
   private var _player:Player;
   private var _map:FlxOgmoLoader;
   private var _mWalls:FlxTilemap;
+  private var _grpSpikes:FlxTypedGroup<Spike>;
 
   /**
    * Function that is called up when to state is created to set it up.
@@ -27,6 +30,7 @@ class PlayState extends FlxState
 
     FlxG.console.addCommand(["map", "level", "changelevel"], loadLevel, "loadLevel", 1);
 
+    _grpSpikes = new FlxTypedGroup<Spike>();
     _player = new Player();
 
     loadLevel(Reg.level);
@@ -57,6 +61,11 @@ class PlayState extends FlxState
       http://api.haxeflixel.com/flixel/addons/editors/ogmo/FlxOgmoLoader.html
     */
     FlxG.collide(_mWalls, _player);
+    FlxG.collide(_player, _grpSpikes, _player.touchSpike);
+
+    if (!_player.alive) {
+      loadLevel(Reg.level);
+    }
   }
 
   public function loadLevel(i:Int):Void
@@ -82,6 +91,7 @@ class PlayState extends FlxState
 
     _map.loadEntities(placeEntities, "entities");
 
+    add(_grpSpikes);
     add(_player);
 
     FlxG.camera.follow(_player, FlxCamera.STYLE_PLATFORMER);
@@ -89,8 +99,14 @@ class PlayState extends FlxState
 
   private function cleanupStage():Void
   {
+    // Remove objects from state
     remove(_mWalls);
+    remove(_grpSpikes);
     remove(_player);
+    // Destroy objects as necessary
+    FlxDestroyUtil.destroy(_mWalls);
+    _grpSpikes.callAll("destroy");
+    _grpSpikes.clear();
   }
 
   private function placeEntities(entityName:String, entityData:Xml):Void
@@ -99,8 +115,11 @@ class PlayState extends FlxState
     var y:Int = Std.parseInt(entityData.get("y"));
     if (entityName == "player")
     {
-      _player.x = x;
-      _player.y = y;
+      _player.reset(x, y);
+    }
+    else if (entityName == "spike")
+    {
+      _grpSpikes.add(new Spike(x, y));
     }
   }
 
