@@ -6,6 +6,7 @@ import flixel.FlxState;
 import flixel.FlxObject;
 import flixel.tile.FlxTilemap;
 import flixel.addons.editors.ogmo.FlxOgmoLoader;
+import flixel.system.debug.LogStyle;
 
 /**
  * A FlxState which can be used for the actual gameplay.
@@ -24,21 +25,11 @@ class PlayState extends FlxState
   {
     FlxG.mouse.visible = false;
 
-    var levels = Utils.getLevelPaths();
-
-    _map = new FlxOgmoLoader(levels[Reg.level]);
-    _mWalls = _map.loadTilemap(AssetPaths.tiles__png, 16, 16, "walls");
-    _mWalls.setTileProperties(1, FlxObject.NONE);
-    _mWalls.setTileProperties(2, FlxObject.ANY);
-    add(_mWalls);
+    FlxG.console.addCommand(["map", "level", "changelevel"], loadLevel, "loadLevel", 1);
 
     _player = new Player();
 
-    _map.loadEntities(placeEntities, "entities");
-
-    add(_player);
-
-    FlxG.camera.follow(_player, FlxCamera.STYLE_PLATFORMER);
+    loadLevel(Reg.level);
 
     _hud = new HUD();
     add(_hud);
@@ -66,6 +57,40 @@ class PlayState extends FlxState
       http://api.haxeflixel.com/flixel/addons/editors/ogmo/FlxOgmoLoader.html
     */
     FlxG.collide(_mWalls, _player);
+  }
+
+  public function loadLevel(i:Int):Void
+  {
+    var levelPath = Reg.levels[i];
+    if (levelPath == null)
+    {
+      FlxG.log.error('Cannot load level index: ${i}');
+      return;
+    }
+    else
+    {
+      FlxG.log.add('Loading level: ${levelPath}');
+    }
+
+    cleanupStage();
+
+    _map = new FlxOgmoLoader(levelPath);
+    _mWalls = _map.loadTilemap(AssetPaths.tiles__png, 16, 16, "walls");
+    _mWalls.setTileProperties(1, FlxObject.NONE);
+    _mWalls.setTileProperties(2, FlxObject.ANY);
+    add(_mWalls);
+
+    _map.loadEntities(placeEntities, "entities");
+
+    add(_player);
+
+    FlxG.camera.follow(_player, FlxCamera.STYLE_PLATFORMER);
+  }
+
+  private function cleanupStage():Void
+  {
+    remove(_mWalls);
+    remove(_player);
   }
 
   private function placeEntities(entityName:String, entityData:Xml):Void
