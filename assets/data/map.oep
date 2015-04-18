@@ -5,18 +5,18 @@
   <BackgroundColor A="255" R="125" G="160" B="255" />
   <GridColor A="255" R="255" G="240" B="90" />
   <LevelDefaultSize>
-    <Width>640</Width>
-    <Height>480</Height>
+    <Width>2400</Width>
+    <Height>2400</Height>
   </LevelDefaultSize>
   <LevelMinimumSize>
-    <Width>640</Width>
-    <Height>480</Height>
+    <Width>2400</Width>
+    <Height>2400</Height>
   </LevelMinimumSize>
   <LevelMaximumSize>
-    <Width>640</Width>
-    <Height>480</Height>
+    <Width>2400</Width>
+    <Height>2400</Height>
   </LevelMaximumSize>
-  <Filename>Y:\projects\superfastbros\assets\data\map.oep</Filename>
+  <Filename>C:\Users\Warmachine\Documents\GitHub\SuperFastBros\assets\data\map.oep</Filename>
   <AngleMode>Degrees</AngleMode>
   <CameraEnabled>false</CameraEnabled>
   <CameraSize>
