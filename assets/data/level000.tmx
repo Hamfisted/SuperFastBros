@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="64" height="64" tilewidth="16" tileheight="16" nextobjectid="14">
+ <tileset firstgid="1" name="tiles" tilewidth="16" tileheight="16">
+  <image source="../images/tiles.png" width="48" height="16"/>
+ </tileset>
+ <layer name="wall" width="64" height="64">
+  <properties>
+   <property name="tileset" value="tiles"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJzt0cEJADAMA7FA99+5OwTnYZCg3yOmM7yybpr9Xd00+7u6aS13XvH/Xd00++8eAAAAAAAAAAAAAAAAADsffYoAeQ==
+  </data>
+ </layer>
+ <objectgroup color="#0000ff" name="player">
+  <object id="9" name="P" x="48" y="128" width="16" height="16"/>
+ </objectgroup>
+ <objectgroup color="#ffff00" name="level_end">
+  <object id="12" name="LE" x="352" y="112" width="16" height="16"/>
+ </objectgroup>
+</map>
