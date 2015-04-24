@@ -9,6 +9,7 @@ import flixel.group.FlxTypedGroup;
 import flixel.tile.FlxTilemap;
 import flixel.addons.editors.ogmo.FlxOgmoLoader;
 import flixel.system.debug.LogStyle;
+import map.Level;
 
 /**
  * A FlxState which can be used for the actual gameplay.
@@ -16,10 +17,7 @@ import flixel.system.debug.LogStyle;
 class PlayState extends FlxState
 {
   private var _hud:HUD;
-  private var _map:TiledLevel;
-  public  var _grpSpikes:FlxTypedGroup<Spike>;
-  public  var _player:Player;
-  public  var _levelEnd:LevelEnd;
+  private var _level:Level;
 
   /**
    * Function that is called up when to state is created to set it up.
@@ -29,10 +27,6 @@ class PlayState extends FlxState
 
     FlxG.console.addCommand(["map", "level", "changelevel"], loadLevel, "loadLevel", 1);
     FlxG.console.addCommand(["winlevel"], winLevel, "winLevel");
-
-    _grpSpikes = new FlxTypedGroup<Spike>();
-    _levelEnd = new LevelEnd();
-    _player = new Player();
 
     loadLevel(Reg.level);
 
@@ -54,16 +48,12 @@ class PlayState extends FlxState
    * Function that is called once every frame.
    */
   override public function update():Void {
-    super.update();
-    /*
-      "Always collide the map with objects, not the other way around."
-      http://api.haxeflixel.com/flixel/addons/editors/ogmo/FlxOgmoLoader.html
-    */
-    FlxG.collide(_map.wallTiles, _player);
-    FlxG.collide(_player, _grpSpikes, _player.touchSpike);
-    FlxG.collide(_player, _levelEnd, winLevel);
+    _level.update();
+    FlxG.collide(_level.player, _level.levelEnd, winLevel);
 
-    if (!_player.alive) {
+    super.update();
+
+    if (!_level.player.alive) {
       loadLevel(Reg.level);
     }
   }
@@ -85,30 +75,29 @@ class PlayState extends FlxState
     Reg.level = i;
     cleanupStage();
 
-    _map = new TiledLevel(levelPath);
-    add(_map.wallTiles);
-    add(_grpSpikes);
-    add(_levelEnd);
-    add(_player);
-    _map.loadObjects(this);
-
-    FlxG.camera.follow(_player, FlxCamera.STYLE_PLATFORMER);
+    _level = new Level(levelPath);
+    add(_level.backgroundGroup);
+    add(_level.levelEnd);
+    add(_level.spikeGroup);
+    add(_level.characterGroup);
+    add(_level.foregroundGroup);
+    add(_level.collisionGroup);
+    FlxG.camera.bounds = _level.getBounds();
+    FlxG.worldBounds.copyFrom(_level.getBounds());
   }
 
   private function cleanupStage():Void {
     // Remove objects from state
-    if (_map != null) {
-      remove(_map.wallTiles);
-      FlxDestroyUtil.destroy(_map.wallTiles);
-      // fixme: actually destroy _map
-      _map = null;
+    if (_level != null) {
+      remove(_level.backgroundGroup);
+      remove(_level.levelEnd);
+      remove(_level.spikeGroup);
+      remove(_level.characterGroup);
+      remove(_level.foregroundGroup);
+      remove(_level.collisionGroup);
+      _level.destroy();
+      _level = null;
     }
-    remove(_grpSpikes);
-    remove(_player);
-    remove(_levelEnd);
-    // Destroy objects as necessary
-    _grpSpikes.callAll("destroy");
-    _grpSpikes.clear();
   }
 
 }

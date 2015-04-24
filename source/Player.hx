@@ -11,10 +11,8 @@ class Player extends FlxSprite
   var initX:Float;
   var initY:Float;
 
-  var lastVelocity:FlxPoint;
-
   var GRAVITY:Int = 800;
-  var JUMP_SPEED:Int = -400;
+  var JUMP_SPEED:Int = -300;
 
   public var speed:Int = 200;
 
@@ -23,8 +21,6 @@ class Player extends FlxSprite
     super(X, Y);
     initX = X;
     initY = Y;
-
-    lastVelocity = new FlxPoint(0, 0);
 
     loadGraphic(AssetPaths.catfighter__png, true, 64, 64);
     setFacingFlip(FlxObject.RIGHT, false, false);
@@ -47,17 +43,12 @@ class Player extends FlxSprite
 
   override public function update():Void
   {
-    animateCollision();
     movement();
     if (alive)
     {
       if (shouldBeDead())
       {
         kill();
-      }
-      else
-      {
-        Reg.score += 1;
       }
     }
     super.update();
@@ -72,7 +63,6 @@ class Player extends FlxSprite
   {
     super.reset(X, Y);
     velocity.set(0, 0);
-    lastVelocity.copyFrom(velocity);
   }
 
   private function shouldBeDead():Bool
@@ -103,8 +93,6 @@ class Player extends FlxSprite
       facing = FlxObject.RIGHT;
     }
 
-    lastVelocity.copyFrom(velocity);
-
     if (_left || _right)
     {
       animation.play("walk");
@@ -117,20 +105,8 @@ class Player extends FlxSprite
 
   private function outOfBounds():Bool
   {
+    // fixme
     return this.y > 800;
-  }
-
-  private function animateCollision():Void
-  {
-    var shakeY = Math.abs(lastVelocity.y - velocity.y)/30000;
-    var shakeAmount = shakeY + Math.abs(lastVelocity.x - velocity.x)/30000;
-
-    /* Let's disable shake for now. It's annoying! */
-
-    // if (shakeAmount > 0.01 && justTouched(FlxObject.FLOOR))
-    // {
-    //   FlxG.camera.shake(shakeAmount, 0.1);
-    // }
   }
 
   public function touchSpike(P:Player, S:Spike):Void

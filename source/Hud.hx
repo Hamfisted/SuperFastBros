@@ -31,6 +31,8 @@ class HUD extends FlxTypedGroup<FlxSprite>
 
     forEach(function(spr:FlxSprite) {
       spr.scrollFactor.set();
+      spr.solid = false;
+      spr.immovable = true;
     });
   }
 
